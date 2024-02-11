@@ -2,29 +2,34 @@
 
 namespace Javaabu\Passport;
 
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Auth\RequestGuard;
+use Illuminate\Support\Facades\Auth;
+use Javaabu\Passport\Guards\TokenGuard;
+use Laravel\Passport\ClientRepository;
+use Laravel\Passport\PassportServiceProvider as BasePassportServiceProvider;
+use Laravel\Passport\PassportUserProvider;
+use Laravel\Passport\TokenRepository;
+use League\OAuth2\Server\ResourceServer;
 
-class PassportServiceProvider extends ServiceProvider
+class PassportServiceProvider extends BasePassportServiceProvider
 {
     /**
-     * Bootstrap the application services.
+     * Make an instance of the token guard.
+     *
+     * @param  array  $config
+     * @return RequestGuard
      */
-    public function boot()
+    protected function makeGuard(array $config): RequestGuard
     {
-        // declare publishes
-        if ($this->app->runningInConsole()) {
-            $this->publishes([
-                __DIR__ . '/../config/config.php' => config_path('passport.php'),
-            ], 'passport-config');
-        }
-    }
-
-    /**
-     * Register the application services.
-     */
-    public function register()
-    {
-        // merge package config with user defined config
-        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'passport');
+        return new RequestGuard(function ($request) use ($config) {
+            return (new TokenGuard(
+                $this->app->make(ResourceServer::class),
+                new PassportUserProvider(Auth::createUserProvider($config['provider']), $config['provider']),
+                $this->app->make(TokenRepository::class),
+                $this->app->make(ClientRepository::class),
+                $this->app->make('encrypter'),
+                $request
+            ))->user();
+        }, $this->app['request']);
     }
 }

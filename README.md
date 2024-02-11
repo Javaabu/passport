@@ -7,19 +7,6 @@
 
 laravel/passport with modifications
 
-
-## Package setup instructions
-1. Search and replace the following:
-passport
-Passport
-Passport
-laravel/passport with modifications
-
-2. Rename PassportServiceProvider.php
-
-3. Remove these instructions
-
-
 ## Documentation
 
 You'll find the documentation on [https://docs.javaabu.com/docs/passport](https://docs.javaabu.com/docs/passport).
@@ -52,7 +39,7 @@ If you discover any security related issues, please email [info@javaabu.com](mai
 ## Credits
 
 - [Javaabu Pvt. Ltd.](https://github.com/javaabu)
-- [Arushad Ahmed (@dash8x)](http://arushad.org)
+- [Athfan Khaleel (@athphane)](https://athfan.com)
 - [All Contributors](../../contributors)
 
 ## License

@@ -2,7 +2,7 @@
 
 namespace Javaabu\Passport\Tests;
 
-use Illuminate\Foundation\Auth\User;
+use \Javaabu\Passport\Tests\Feature\Models\User;
 use Illuminate\Support\Facades\Route;
 use Laravel\Passport\Client;
 use Laravel\Passport\ClientRepository;

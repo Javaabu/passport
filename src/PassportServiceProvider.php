@@ -5,6 +5,8 @@ namespace Javaabu\Passport;
 use Illuminate\Auth\RequestGuard;
 use Illuminate\Support\Facades\Auth;
 use Javaabu\Passport\Guards\TokenGuard;
+use Javaabu\Passport\Http\Middleware\AuthenticateOAuthClient;
+use Javaabu\Passport\Tests\Feature\OauthClientTest;
 use Laravel\Passport\ClientRepository;
 use Laravel\Passport\Passport;
 use Laravel\Passport\PassportServiceProvider as BasePassportServiceProvider;
@@ -14,6 +16,15 @@ use League\OAuth2\Server\ResourceServer;
 
 class PassportServiceProvider extends BasePassportServiceProvider
 {
+
+    public function boot(): void
+    {
+        parent::boot();
+
+        app('router')->aliasMiddleware('oauth.client', OauthClientTest::class);;
+    }
+
+
     /**
      * Make an instance of the token guard.
      *

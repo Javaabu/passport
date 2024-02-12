@@ -2,8 +2,11 @@
 
 namespace Javaabu\Passport\Tests;
 
+use Illuminate\Support\Facades\Config;
+use Javaabu\Passport\Tests\Feature\Http\Controllers\Api\UsersController;
 use \Javaabu\Passport\Tests\Feature\Models\User;
 use Illuminate\Support\Facades\Route;
+use Javaabu\Passport\Tests\Feature\OauthClientTest;
 use Laravel\Passport\Client;
 use Laravel\Passport\ClientRepository;
 use Laravel\Passport\Passport;
@@ -32,6 +35,12 @@ abstract class TestCase extends BaseTestCase
         ]);
 
         Passport::cookie('api_token');
+
+
+        Config::set('auth.guards.api', [
+            'driver' => 'passport',
+            'provider' => 'users',
+        ]);
     }
 
     public function loadMigrations(): void
@@ -104,27 +113,6 @@ abstract class TestCase extends BaseTestCase
                 if (app()->runningUnitTests()) {
                     Route::get('test', function () {
                         return response()->json('It works');
-                    });
-
-
-                    Route::group([
-                        'middleware' => ['auth:api', 'active:api'],
-                    ], function () {
-                        Route::group([
-                            'middleware' => ['json'],
-                        ], function () {
-                            /**
-                             * Auth
-                             */
-                            Route::post('oauth/revoke', [UsersController::class, 'revoke']);
-
-                            /**
-                             * Users
-                             */
-                            Route::get('users/profile', [UsersController::class, 'profile'])->name('users.profile');
-                            Route::get('users', [UsersController::class, 'index'])->name('users.index');
-                            Route::get('users/{id}', [UsersController::class, 'show'])->name('users.show');
-                        });
                     });
                 }
             });

@@ -6,9 +6,8 @@ use Illuminate\Auth\RequestGuard;
 use Illuminate\Support\Facades\Auth;
 use Javaabu\Passport\Guards\TokenGuard;
 use Javaabu\Passport\Http\Middleware\AuthenticateOAuthClient;
-use Javaabu\Passport\Tests\Feature\OauthClientTest;
+use Javaabu\Passport\Http\Middleware\RedirectIfNotActivated;
 use Laravel\Passport\ClientRepository;
-use Laravel\Passport\Passport;
 use Laravel\Passport\PassportServiceProvider as BasePassportServiceProvider;
 use Laravel\Passport\PassportUserProvider;
 use Laravel\Passport\TokenRepository;
@@ -21,7 +20,7 @@ class PassportServiceProvider extends BasePassportServiceProvider
     {
         parent::boot();
 
-        app('router')->aliasMiddleware('oauth.client', OauthClientTest::class);;
+        app('router')->aliasMiddleware('oauth.client', AuthenticateOAuthClient::class);
     }
 
 

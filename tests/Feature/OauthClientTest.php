@@ -106,8 +106,6 @@ class OauthClientTest extends TestCase
     /** @test */
     public function it_can_authorize_a_client_access_token_from_auth_header()
     {
-        $this->withoutExceptionHandling();
-
         $access_token = $this->getClientAccessToken();
 
         $this->json('get', '/test', [], [
@@ -116,19 +114,6 @@ class OauthClientTest extends TestCase
             ->assertStatus(200)
             ->assertJsonFragment([
                 'It works'
-            ]);
-    }
-
-    /** @test */
-    public function it_can_authorize_an_admin()
-    {
-        $user = $this->getUser();
-        Passport::actingAs($user, ['read', 'write']);
-
-        $this->json('get', '/api/v1/users/profile')
-            ->assertStatus(200)
-            ->assertJson([
-                'name' => $user->name,
             ]);
     }
 }

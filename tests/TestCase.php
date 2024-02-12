@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Route;
 use Laravel\Passport\Client;
 use Laravel\Passport\ClientRepository;
+use Laravel\Passport\Passport;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -24,6 +25,13 @@ abstract class TestCase extends BaseTestCase
         $this->createUser();
 
         $this->registerRoutes();
+
+        Passport::tokensCan([
+            'read' => 'Read',
+            'write' => 'Write',
+        ]);
+
+        Passport::cookie('api_token');
     }
 
     public function loadMigrations(): void
@@ -96,6 +104,27 @@ abstract class TestCase extends BaseTestCase
                 if (app()->runningUnitTests()) {
                     Route::get('test', function () {
                         return response()->json('It works');
+                    });
+
+
+                    Route::group([
+                        'middleware' => ['auth:api', 'active:api'],
+                    ], function () {
+                        Route::group([
+                            'middleware' => ['json'],
+                        ], function () {
+                            /**
+                             * Auth
+                             */
+                            Route::post('oauth/revoke', [UsersController::class, 'revoke']);
+
+                            /**
+                             * Users
+                             */
+                            Route::get('users/profile', [UsersController::class, 'profile'])->name('users.profile');
+                            Route::get('users', [UsersController::class, 'index'])->name('users.index');
+                            Route::get('users/{id}', [UsersController::class, 'show'])->name('users.show');
+                        });
                     });
                 }
             });

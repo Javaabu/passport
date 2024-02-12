@@ -6,6 +6,7 @@ use Illuminate\Auth\RequestGuard;
 use Illuminate\Support\Facades\Auth;
 use Javaabu\Passport\Guards\TokenGuard;
 use Laravel\Passport\ClientRepository;
+use Laravel\Passport\Passport;
 use Laravel\Passport\PassportServiceProvider as BasePassportServiceProvider;
 use Laravel\Passport\PassportUserProvider;
 use Laravel\Passport\TokenRepository;

@@ -12,7 +12,7 @@ class OauthClientTest extends TestCase
     public function it_can_generate_a_client_credentials_access_token()
     {
         $this->withoutExceptionHandling();
-        
+
         $user = $this->getUser();
 
         $client = (new ClientRepository())->create(

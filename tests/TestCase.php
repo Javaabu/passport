@@ -30,7 +30,10 @@ abstract class TestCase extends BaseTestCase
 
         $this->registerRoutes();
 
-        Passport::loadKeysFrom(__DIR__.'/keys');
+        //Passport::loadKeysFrom(__DIR__.'/keys');
+
+        Config::set('passport.private_key', file_get_contents(__DIR__ . '/keys/oauth-private.key'));
+        Config::set('passport.public_key', file_get_contents(__DIR__ . '/keys/oauth-public.key'));
 
         Passport::tokensCan([
             'read' => 'Read',

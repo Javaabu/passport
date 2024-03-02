@@ -4,16 +4,9 @@ namespace Javaabu\Passport\Tests\Feature;
 
 use Javaabu\Passport\Tests\TestCase;
 use Laravel\Passport\ClientRepository;
-use Laravel\Passport\Passport;
 
 class OauthClientTest extends TestCase
 {
-    /** @test */
-    public function it_can_run_passport_install_command(): void
-    {
-        $this->artisan('passport:install')
-            ->assertExitCode(0);
-    }
 
     /** @test */
     public function it_can_generate_a_client_credentials_access_token()

@@ -10,6 +10,7 @@ use Javaabu\Passport\Tests\Feature\OauthClientTest;
 use Laravel\Passport\Client;
 use Laravel\Passport\ClientRepository;
 use Laravel\Passport\Passport;
+use Javaabu\Passport\Tests\Feature\Providers\AppServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -53,6 +54,7 @@ abstract class TestCase extends BaseTestCase
     {
         return [
             \Javaabu\Passport\PassportServiceProvider::class,
+            AppServiceProvider::class,
         ];
     }
 

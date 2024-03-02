@@ -52,6 +52,8 @@ class AuthenticateOAuthClient
     public function handle($request, Closure $next, ...$scopes)
     {
         try {
+            $api_guards = $this->getApiGuards();
+
             //first try normal authentication
             return app(Authenticate::class)->handle($request, function ($request) use ($next, $scopes) {
 
@@ -68,7 +70,7 @@ class AuthenticateOAuthClient
                 }
 
                 return $next($request);
-            }, 'api');
+            }, ...$api_guards);
         } catch (AuthenticationException $e) {
             try {
                 //authentication failed, try client auth
@@ -79,6 +81,14 @@ class AuthenticateOAuthClient
                 return $next($request);
             }
         }
+    }
+
+    /**
+     * Get the passport guards
+     */
+    protected function getApiGuards(): array
+    {
+        return config('auth.passport_guards', ['api']);
     }
 
     /**

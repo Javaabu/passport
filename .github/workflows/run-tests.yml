@@ -21,6 +21,7 @@ jobs:
             stability: [ prefer-lowest, prefer-stable ]
             include:
                 -   laravel: 12.*
+                    passport: 12.*
                     testbench: 10.*
                     carbon: ^3.8.4
                 -   laravel: 11.*

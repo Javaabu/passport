@@ -26,7 +26,7 @@ jobs:
                     carbon: ^3.8.4
                 -   laravel: 11.*
                     passport: 12.*
-                    testbench: 9.*
+                    testbench: ^9.16
                     carbon: ^2.63
                 -   laravel: 10.*
                     passport: 11.*

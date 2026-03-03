@@ -1,7 +1,7 @@
 # Passport
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/javaabu/passport.svg?style=flat-square)](https://packagist.org/packages/javaabu/passport)
-[![Test Status](../../actions/workflows/run-tests.yml/badge.svg)](../../actions/workflows/run-tests.yml)
+[![Test Status](../../actions/workflows/run-tests.yml/badge.svg?branch=1.x)](../../actions/workflows/run-tests.yml)
 [![Quality Score](https://img.shields.io/scrutinizer/g/javaabu/passport.svg?style=flat-square)](https://scrutinizer-ci.com/g/javaabu/passport)
 [![Total Downloads](https://img.shields.io/packagist/dt/javaabu/passport.svg?style=flat-square)](https://packagist.org/packages/javaabu/passport)
 

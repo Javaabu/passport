@@ -2,7 +2,7 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/javaabu/passport.svg?style=flat-square)](https://packagist.org/packages/javaabu/passport)
 [![Test Status](../../actions/workflows/run-tests.yml/badge.svg)](../../actions/workflows/run-tests.yml)
-[![Quality Score](https://img.shields.io/scrutinizer/g/javaabu/passport.svg?style=flat-square)](https://scrutinizer-ci.com/g/javaabu/passport)
+![Code Coverage Badge](./.github/coverage.svg)
 [![Total Downloads](https://img.shields.io/packagist/dt/javaabu/passport.svg?style=flat-square)](https://packagist.org/packages/javaabu/passport)
 
 laravel/passport with modifications

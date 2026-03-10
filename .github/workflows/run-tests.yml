@@ -24,11 +24,9 @@ jobs:
                     testbench: 11.*
                     carbon: ^3.8.4
                 -   laravel: 12.*
-                    passport: 12.*
                     testbench: 10.*
                     carbon: ^3.8.4
                 -   laravel: 11.*
-                    passport: 12.*
                     testbench: ^9.16
                     carbon: ^2.63
             exclude:
@@ -55,7 +53,7 @@ jobs:
 
       -   name: Install dependencies
           run: |
-              composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "nesbot/carbon:${{ matrix.carbon }}" "laravel/passport:${{ matrix.passport }}" --no-interaction --no-update
+              composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "nesbot/carbon:${{ matrix.carbon }}" --no-interaction --no-update
               composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
       -   name: Execute tests

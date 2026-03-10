@@ -42,7 +42,6 @@ abstract class TestCase extends BaseTestCase
 
         Passport::cookie('api_token');
 
-
         Config::set('auth.guards.api', [
             'driver' => 'passport',
             'provider' => 'users',
@@ -82,21 +81,30 @@ abstract class TestCase extends BaseTestCase
         return $this->getAccessToken('client_credentials', $scopes);
     }
 
-    protected function getAccessToken(string $grant_type = 'client_credentials', array $scopes = ['read', 'write'], array $params = [], Client $client = null)
+    protected function getAccessToken(
+        string $grant_type = 'client_credentials',
+        array $scopes = ['read', 'write'],
+        array $params = [],
+        ?Client $client = null
+    )
     {
         if (empty($client)) {
             // create a new client
-            $user = $this->getUser();
-            $client = (new ClientRepository())->create(
-                $user->id,
-                'Test Client',
-                'http://localhost'
-            );
+            if ($grant_type === 'client_credentials') {
+                $client = (new ClientRepository())->createClientCredentialsGrantClient(
+                    'Test Client'
+                );
+            } else {
+                $client = (new ClientRepository())->createPasswordGrantClient(
+                    'Test Client',
+                    'users'
+                );
+            }
         }
 
         $request_params = array_merge([
             'client_id'     => $client->id,
-            'client_secret' => $client->secret,
+            'client_secret' => $client->plainSecret,
             'grant_type'    => $grant_type,
             'scope'         => implode(' ', $scopes),
         ], $params);

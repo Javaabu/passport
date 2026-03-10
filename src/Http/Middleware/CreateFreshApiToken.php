@@ -5,12 +5,14 @@ namespace Javaabu\Passport\Http\Middleware;
 use Closure;
 use Exception;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Cookie\CookieValuePrefix;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Laravel\Passport\ApiTokenCookieFactory;
 use Laravel\Passport\Passport;
+use Symfony\Component\HttpFoundation\Response as BaseResponse;
 
 class CreateFreshApiToken extends \Laravel\Passport\Http\Middleware\CreateFreshApiToken
 {
@@ -54,7 +56,7 @@ class CreateFreshApiToken extends \Laravel\Passport\Http\Middleware\CreateFreshA
      * @param  string|null  $guard
      * @return mixed
      */
-    public function handle($request, Closure $next, $guard = null)
+    public function handle(Request $request, Closure $next, ?string $guard = null): BaseResponse0
     {
         $this->guard = $guard;
 
@@ -80,7 +82,7 @@ class CreateFreshApiToken extends \Laravel\Passport\Http\Middleware\CreateFreshA
      * @param  Response  $response
      * @return bool
      */
-    protected function shouldReceiveFreshToken($request, $response)
+    protected function shouldReceiveFreshToken(Request $request, BaseResponse $response): bool
     {
         return $this->requestShouldReceiveFreshToken($request) &&
             (
@@ -95,7 +97,7 @@ class CreateFreshApiToken extends \Laravel\Passport\Http\Middleware\CreateFreshA
      * @param  Request  $request
      * @return bool
      */
-    protected function requestShouldReceiveFreshToken($request)
+    protected function requestShouldReceiveFreshToken(Request $request): bool
     {
         $route_name = $request->route()->getName();
 
@@ -111,7 +113,7 @@ class CreateFreshApiToken extends \Laravel\Passport\Http\Middleware\CreateFreshA
      * @param  Response  $response
      * @return boolean
      */
-    protected function authStatusHasChanged($request, $response)
+    protected function authStatusHasChanged(Request $request, BaseResponse $response): bool
     {
         // Already has a token cookie
         // But the cookie doesn't match the current auth status
@@ -129,7 +131,7 @@ class CreateFreshApiToken extends \Laravel\Passport\Http\Middleware\CreateFreshA
      * @param $response
      * @return mixed
      */
-    protected function getCookieUserIdentifier($response)
+    protected function getCookieUserIdentifier(Request|BaseResponse $response)
     {
         // If we need to retrieve the token from the cookie, it'll be encrypted so we must
         // first decrypt the cookie and then attempt to find the token value within the
@@ -148,11 +150,15 @@ class CreateFreshApiToken extends \Laravel\Passport\Http\Middleware\CreateFreshA
      * @param  Request  $request
      * @return array
      */
-    protected function decodeJwtTokenCookie($request)
+    protected function decodeJwtTokenCookie(Request|BaseResponse $request): array
     {
-        return (array)JWT::decode(
-            CookieValuePrefix::remove($this->encrypter->decrypt($request->cookie(Passport::cookie()), Passport::$unserializesCookies)),
-            new Key(Passport::tokenEncryptionKey($this->encrypter), 'HS256'),
+        $jwt = $request->cookie(Passport::cookie());
+
+        return (array) JWT::decode(
+            Passport::$decryptsCookies
+                ? CookieValuePrefix::remove($this->encrypter->decrypt($jwt, Passport::$unserializesCookies))
+                : $jwt,
+            new Key(Passport::tokenEncryptionKey($this->encrypter), 'HS256')
         );
     }
 }

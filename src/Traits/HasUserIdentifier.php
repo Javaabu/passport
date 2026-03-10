@@ -3,6 +3,10 @@
 namespace Javaabu\Passport\Traits;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Laravel\Passport\PassportUserProvider;
 
 trait HasUserIdentifier
 {
@@ -50,6 +54,20 @@ trait HasUserIdentifier
         return $id.'_'.$user_type;
     }
 
+    public function getPassportUserProvider($user_type): ?PassportUserProvider
+    {
+        $provider = Str::plural($user_type);
+
+        // check if provider exists
+        $providers = Arr::wrap(config('auth.providers', []));
+
+        if (array_key_exists($provider, $providers)) {
+            return new PassportUserProvider(Auth::createUserProvider($provider), $provider);
+        }
+
+        return null;
+    }
+
     /**
      * Retrieve the user by id
      * @param $identifier
@@ -62,10 +80,8 @@ trait HasUserIdentifier
         $user_id = isset($user_params['user_id']) ? $user_params['user_id'] : '';
         $user_type = isset($user_params['user_type']) ? $user_params['user_type'] : '';
 
-        $class = Model::getActualClassNameForMorph($user_type);
-
-        if ($class) {
-            return $class::find($user_id);
+        if ($provider = $this->getPassportUserProvider($user_type)) {
+            return $provider->retrieveById($user_id);
         }
 
         return null;

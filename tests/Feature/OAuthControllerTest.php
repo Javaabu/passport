@@ -46,7 +46,6 @@ class OAuthControllerTest extends TestCase
 
         $this->json('post', '/oauth/token', [
             'client_id' => $client->id,
-            'client_secret' => $client->plainSecret,
             'grant_type' => 'password',
             'username' => $user->email,
             'password' => 'password',
@@ -74,7 +73,6 @@ class OAuthControllerTest extends TestCase
 
         $this->json('post', '/oauth/token', [
             'client_id' => $client->id,
-            'client_secret' => $client->plainSecret,
             'grant_type' => 'password',
             'username' => $user->email,
             'password' => 'wrong password',

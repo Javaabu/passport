@@ -3,14 +3,12 @@
 namespace Javaabu\Passport\Tests;
 
 use Illuminate\Support\Facades\Config;
-use Javaabu\Passport\Tests\Feature\Http\Controllers\Api\UsersController;
-use \Javaabu\Passport\Tests\Feature\Models\User;
 use Illuminate\Support\Facades\Route;
-use Javaabu\Passport\Tests\Feature\OauthClientTest;
+use Javaabu\Passport\Tests\TestSupport\Models\User;
+use Javaabu\Passport\Tests\TestSupport\Providers\TestServiceProvider;
 use Laravel\Passport\Client;
 use Laravel\Passport\ClientRepository;
 use Laravel\Passport\Passport;
-use Javaabu\Passport\Tests\Feature\Providers\AppServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -32,8 +30,8 @@ abstract class TestCase extends BaseTestCase
 
         //Passport::loadKeysFrom(__DIR__.'/keys');
 
-        Config::set('passport.private_key', file_get_contents(__DIR__ . '/keys/oauth-private.key'));
-        Config::set('passport.public_key', file_get_contents(__DIR__ . '/keys/oauth-public.key'));
+        Config::set('passport.private_key', file_get_contents(__DIR__ . '/TestSupport/keys/oauth-private.key'));
+        Config::set('passport.public_key', file_get_contents(__DIR__ . '/TestSupport/keys/oauth-public.key'));
 
         Passport::tokensCan([
             'read' => 'Read',
@@ -58,7 +56,7 @@ abstract class TestCase extends BaseTestCase
     {
         return [
             \Javaabu\Passport\PassportServiceProvider::class,
-            AppServiceProvider::class,
+            TestServiceProvider::class,
         ];
     }
 

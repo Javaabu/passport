@@ -1,6 +1,6 @@
 <?php
 
-namespace Javaabu\Passport\Tests\Feature\Models;
+namespace Javaabu\Passport\Tests\TestSupport\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Passport\HasApiTokens;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Javaabu\Passport\Tests\Feature\Http\Controllers\Api;
+namespace Javaabu\Passport\Tests\TestSupport\Http\Controllers\Api;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;

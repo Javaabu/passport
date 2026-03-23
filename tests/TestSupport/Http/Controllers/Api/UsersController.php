@@ -1,11 +1,11 @@
 <?php
 
-namespace Javaabu\Passport\Tests\Feature\Http\Controllers\Api;
+namespace Javaabu\Passport\Tests\TestSupport\Http\Controllers\Api;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Schema;
 use Spatie\QueryBuilder\QueryBuilderRequest;
 

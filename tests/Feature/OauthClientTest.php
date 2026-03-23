@@ -2,11 +2,13 @@
 
 namespace Javaabu\Passport\Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Javaabu\Passport\Tests\TestCase;
 use Laravel\Passport\ClientRepository;
 
 class OauthClientTest extends TestCase
 {
+    use RefreshDatabase;
 
     public function test_it_can_generate_a_client_credentials_access_token()
     {

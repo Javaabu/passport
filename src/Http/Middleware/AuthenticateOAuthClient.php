@@ -21,6 +21,7 @@ use Laravel\Passport\Exceptions\MissingScopeException;
 use Laravel\Passport\Http\Middleware\CheckToken;
 use Laravel\Passport\Passport;
 use Laravel\Passport\TransientToken;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthenticateOAuthClient
 {
@@ -54,7 +55,7 @@ class AuthenticateOAuthClient
      *
      * @throws AuthenticationException
      */
-    public function handle($request, Closure $next, ...$scopes)
+    public function handle(Request $request, Closure $next, string ...$scopes): Response
     {
         try {
             $api_guards = $this->getApiGuards();
@@ -78,7 +79,7 @@ class AuthenticateOAuthClient
             }, ...$api_guards);
         } catch (AuthenticationException $e) {
             try {
-                //authentication failed, try client auth
+                // authentication failed, try client auth
                 return app(CheckToken::class)->handle($request, $next, ...$scopes);
             } catch (AuthenticationException $e) {
                 $this->authenticateViaCookie();
@@ -99,7 +100,7 @@ class AuthenticateOAuthClient
     protected function authenticateViaCookie(): ?Authenticatable
     {
         if (! $token = $this->getTokenViaCookie()) {
-            return null;
+            throw new AuthenticationException();
         }
 
         // If this user exists, we will return this user and attach a "transient" token to

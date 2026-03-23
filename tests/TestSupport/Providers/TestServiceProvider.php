@@ -3,6 +3,7 @@
 namespace Javaabu\Passport\Tests\TestSupport\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Javaabu\Passport\Tests\TestSupport\Http\Middleware\RedirectIfNotActivated;
 use Laravel\Passport\Passport;
 
 class TestServiceProvider extends ServiceProvider
@@ -13,6 +14,7 @@ class TestServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadMigrationsFrom([
+            __DIR__ . '/../../../vendor/laravel/passport/database/migrations',
             __DIR__ . '/../database',
         ]);
 
@@ -26,6 +28,6 @@ class TestServiceProvider extends ServiceProvider
      */
     public function register()
     {
-
+        app('router')->aliasMiddleware('active', RedirectIfNotActivated::class);
     }
 }

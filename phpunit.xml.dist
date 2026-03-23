@@ -32,5 +32,6 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="AUTH_MODEL" value="Javaabu\Passport\Tests\TestSupport\Models\User"/>
     </php>
 </phpunit>

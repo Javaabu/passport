@@ -56,7 +56,7 @@ class CreateFreshApiToken extends \Laravel\Passport\Http\Middleware\CreateFreshA
      * @param  string|null  $guard
      * @return mixed
      */
-    public function handle(Request $request, Closure $next, ?string $guard = null): BaseResponse0
+    public function handle(Request $request, Closure $next, ?string $guard = null): BaseResponse
     {
         $this->guard = $guard;
 
@@ -67,7 +67,7 @@ class CreateFreshApiToken extends \Laravel\Passport\Http\Middleware\CreateFreshA
             $identifier = ($user && $user->is_active) ? $user->getPassportCookieIdentifier() : null;
 
             $response->withCookie($this->cookieFactory->make(
-                $identifier,
+                $identifier ?: '',
                 $request->session()->token()
             ));
         }

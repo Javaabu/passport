@@ -2,10 +2,15 @@
 
 namespace Javaabu\Passport\Tests;
 
+use Illuminate\Cookie\CookieValuePrefix;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
+use Javaabu\Passport\Http\Middleware\CreateFreshApiToken;
+use Javaabu\Passport\Tests\TestSupport\Enums\UserStatuses;
 use Javaabu\Passport\Tests\TestSupport\Models\User;
 use Javaabu\Passport\Tests\TestSupport\Providers\TestServiceProvider;
+use Laravel\Passport\ApiTokenCookieFactory;
 use Laravel\Passport\Client;
 use Laravel\Passport\ClientRepository;
 use Laravel\Passport\Passport;
@@ -21,8 +26,6 @@ abstract class TestCase extends BaseTestCase
         $this->app['config']->set('app.key', 'base64:yWa/ByhLC/GUvfToOuaPD7zDwB64qkc/QkaQOrT5IpE=');
 
         $this->app['config']->set('session.serialization', 'php');
-
-        $this->loadMigrations();
 
         $this->createUser();
 
@@ -46,12 +49,6 @@ abstract class TestCase extends BaseTestCase
         ]);
     }
 
-    public function loadMigrations(): void
-    {
-        $this->loadLaravelMigrations();
-        $this->loadMigrationsFrom(__DIR__ . '/../vendor/laravel/passport/database/migrations');
-    }
-
     protected function getPackageProviders($app): array
     {
         return [
@@ -60,23 +57,93 @@ abstract class TestCase extends BaseTestCase
         ];
     }
 
-    public function createUser(): void
+    public function createUser(?string $email = null): User
     {
         $user = new User();
+        $user->status = UserStatuses::APPROVED;
         $user->name = 'TestUser';
-        $user->email = 'admin@example.com';
+        $user->email = $email ?: 'admin@example.com';
         $user->password = bcrypt('password');
         $user->save();
+
+        return $user;
     }
 
-    public function getUser(): User
+    protected function actingAsApiUser($email, $scopes = ['read', 'write'], $guard = null)
     {
-        return User::first();
+        //find the user
+        $user = is_object($email) ? $email : $this->getUser($email);
+
+        if (! $guard) {
+            $guard = 'api';
+        }
+
+        Passport::actingAs($user, $scopes, $guard);
+    }
+
+    public function getUser(?string $email = null): User
+    {
+        if ($email) {
+            $user = User::where('email', $email)->first();
+
+            if (! $user) {
+                $user = $this->createUser($email);
+            }
+        } else {
+            $user = User::first();
+        }
+
+        return $user ?: $this->createUser();
     }
 
     protected function getClientAccessToken(array $scopes = ['read', 'write']): mixed
     {
         return $this->getAccessToken('client_credentials', $scopes);
+    }
+
+    protected function getOAuthCookie($user)
+    {
+        $cookie_factory = new ApiTokenCookieFactory(app('config'), app('encrypter'));
+
+        // initialize the CSRF Token
+        session()->start();
+
+        $identifier = ($user && $user->is_active) ? $user->getPassportCookieIdentifier() : null;
+
+        $cookie = $cookie_factory->make($identifier ?: '', session()->token());
+
+        return app('encrypter')->encrypt(
+            CookieValuePrefix::create($cookie->getName(), app('encrypter')->getKey()).$cookie->getValue(),
+            Passport::$unserializesCookies
+        );
+    }
+
+    public function jsonApi($method, $uri, array $data = [], string $access_cookie = '', array $headers = [], array $cookies = [])
+    {
+        $files = $this->extractFilesFromDataArray($data);
+
+        $content = json_encode($data);
+
+        $headers = array_merge([
+            'CONTENT_LENGTH' => mb_strlen($content, '8bit'),
+            'CONTENT_TYPE' => 'application/json',
+            'Accept' => 'application/json',
+            'X-CSRF-TOKEN' => session()->token(),
+        ], $headers);
+
+        $cookies = array_merge([
+            Passport::cookie() => $access_cookie,
+        ], $cookies);
+
+        return $this->call(
+            $method,
+            $uri,
+            [],
+            $cookies,
+            $files,
+            $this->transformHeadersToServerVars($headers),
+            $content
+        );
     }
 
     protected function getAccessToken(
@@ -128,6 +195,35 @@ abstract class TestCase extends BaseTestCase
                         return response()->json('It works');
                     });
                 }
+            });
+
+        Route::middleware([
+            'auth:api',
+            'active:api'
+        ])
+            ->group(function () {
+                Route::get('users/profile', function (Request $request) {
+                    return response()->json($request->user());
+                });
+            });
+
+        Route::middleware([
+            'web',
+            CreateFreshApiToken::class,
+            'auth:web'
+        ])
+            ->group(function () {
+                Route::get('/verify', function (Request $request) {
+                    return response()->json($request->user());
+                });
+
+                Route::middleware([
+                    'active:web'
+                ])->group(function () {
+                    Route::get('/dashboard', function (Request $request) {
+                        return response()->json($request->user());
+                    });
+                });
             });
     }
 }

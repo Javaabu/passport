@@ -56,6 +56,11 @@ trait HasUserIdentifier
 
     public function getPassportUserProvider($user_type): ?PassportUserProvider
     {
+        // fix for when not using morph map
+        if (class_exists($user_type)) {
+            $user_type = Str::lower(class_basename($user_type));
+        }
+
         $provider = Str::plural($user_type);
 
         // check if provider exists
